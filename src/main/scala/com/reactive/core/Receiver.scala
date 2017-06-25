@@ -6,7 +6,7 @@ import akka.event.slf4j.SLF4JLogging
 import akka.util.ByteString
 import akka.stream.ActorMaterializer
 import akka.stream.javadsl.{Framing, FramingTruncation}
-import akka.stream.scaladsl.{Flow, Sink, Source, Tcp}
+import akka.stream.scaladsl.{Flow, Keep, RunnableGraph, Sink, Source, Tcp}
 import com.reacative.protocol.StudentScore
 
 import scala.concurrent.Future
@@ -15,30 +15,34 @@ import scala.util.{Failure, Success}
 /**
   * Created by guifeng on 2017/6/25.
   */
+
 class Receiver(host: String, port: Int)(implicit val system: ActorSystem) extends SLF4JLogging{
+  import system.dispatcher
+  implicit val materializer = ActorMaterializer()
+
+  private val frameDecoder = Framing.delimiter(ByteString("\n"), maximumFrameLength = 2048)
 
   def run(): Unit = {
+    val connections: Source[Tcp.IncomingConnection, Future[Tcp.ServerBinding]] = Tcp().bind(host, port)
+    parserStudentHandler(connections, system)
+    // echoHandler(connections)
+  }
 
-    implicit val materializer = ActorMaterializer()
-    import system.dispatcher
-
-    val connections = Tcp().bind(host, port)
-
+  def parserStudentHandler(connections: Source[Tcp.IncomingConnection, Future[Tcp.ServerBinding]],
+                           system: ActorSystem): Unit ={
     val handler = Sink.foreach[Tcp.IncomingConnection]{ conn =>
-      conn.flow.via(Framing.delimiter(ByteString("\n"), maximumFrameLength = 1000,
-        FramingTruncation.ALLOW))
-          .map(_.utf8String) // mapping to an actor
-          .map(_.split(","))
-          .filter({ arr => arr(1) == "male"})
-          .mapConcat(StudentScore(_).toList) // mapConcat => flatMap
+      println(s"New connection from: ${conn.remoteAddress}")
+      conn.flow.via(frameDecoder)
+          .map(_.utf8String.split(",")) // mapping to an actor
+          .filter{arr => arr(1) == "male"}
+          .mapConcat(arr => StudentScore(arr).toList) // mapConcat => flatMap
           .to(Sink.foreach({ stu =>
-        log.info(s"studentScore is: ${stu}")
-//        Thread.sleep(100)
+            log.info(s"studentScore is: ${stu}")
+            //Thread.sleep(100)
       }))
     }
 
-    val binding = connections.to(Sink.ignore).run()
-
+    val binding: Future[Tcp.ServerBinding] = connections.to(handler).run()
     binding.onComplete {
       case Success(b) =>
         println("Server started, listening on: " + b.localAddress)
@@ -46,7 +50,18 @@ class Receiver(host: String, port: Int)(implicit val system: ActorSystem) extend
         println(s"Server bind to $host:$port failed.", ex)
         system.terminate()
     }
+  }
 
+  def echoHandler(connections: Source[Tcp.IncomingConnection, Future[Tcp.ServerBinding]]): Unit ={
+    val echoHandler = Sink.foreach[Tcp.IncomingConnection] { _.flow.join(Flow[ByteString]).run() }
+    connections runForeach { connection =>
+      println(s"New connection from: ${connection.remoteAddress}")
+      val echo = Flow[ByteString]
+          .via(frameDecoder)
+          .map(_.utf8String + "\n")
+          .map(ByteString(_))
+      connection.handleWith(echo)
+    }
   }
 }
 

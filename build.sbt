@@ -2,8 +2,6 @@ name := "reactiveProject"
 
 version := "1.0"
 
-author := "guifengleaf@gmail.com"
-
 resolvers ++= Seq("Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository",
   "aliyun Repository" at "http://maven.aliyun.com/nexus/content/groups/public/",
   "central Repository" at "http://repo1.maven.org/maven2")
@@ -13,6 +11,7 @@ libraryDependencies ++= {
   Seq(
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-remote" % akkaVersion,
+    "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-metrics" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,

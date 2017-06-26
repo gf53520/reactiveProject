@@ -19,7 +19,7 @@ import scala.util.Random
   */
 
 
-object Sender extends SLF4JLogging{
+object Sender extends SLF4JLogging {
   def main(args: Array[String]): Unit = {
 
     implicit val system = ActorSystem("sender")
@@ -32,19 +32,20 @@ object Sender extends SLF4JLogging{
     val it: () => Iterator[String] = () => scala.io.Source.fromInputStream(stream).getLines
 
     // ---- first source solution ---
-//    val source: Source[ByteString, Future[IOResult]] =
-//        FileIO.fromPath(Paths.get(s"/tmp/smallDataSet"))
-//      .via(Framing.delimiter(ByteString("\n"), 1000, false))
-//          .map { line =>
-//            log.info(s"line is ${line  }")
-//            ByteString(line + "\n") }
+    //    val source: Source[ByteString, Future[IOResult]] =
+    //        FileIO.fromPath(Paths.get(s"/tmp/smallDataSet"))
+    //      .via(Framing.delimiter(ByteString("\n"), 1000, false))
+    //          .map { line =>
+    //            log.info(s"line is ${line  }")
+    //            ByteString(line + "\n") }
 
     // ---- second source solution ---
     val source: Source[ByteString, NotUsed] =
-        Source.fromIterator(it)
-        .map { line =>
-            log.info(s"line is ${line  }")
-          ByteString(line + "\n") }
+      Source.fromIterator(it)
+          .map { line =>
+            log.info(s"line is ${line}")
+            ByteString(line + "\n")
+          }
 
     val sink = Sink.onComplete({
       r => log.info("Completed with: " + r)
@@ -62,11 +63,11 @@ object Sender extends SLF4JLogging{
   }
 
 
-  def createTestData: Unit ={
+  def createTestData: Unit = {
     val writer = new PrintWriter(new File("smallDataSet"))
     val shuffle = Random.shuffle((1 to 100000).toList)
     val data = shuffle.map { id =>
-      val sex = if(Random.nextDouble() > 0.5) "male" else  "female"
+      val sex = if (Random.nextDouble() > 0.5) "male" else "female"
       val math = 100 * Random.nextDouble()
       val chinese = 100 * Random.nextDouble()
       val english = 100 * Random.nextDouble()

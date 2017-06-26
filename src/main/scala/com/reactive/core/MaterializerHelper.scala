@@ -8,7 +8,7 @@ import akka.stream.{ActorMaterializer, ActorMaterializerSettings, Supervision}
   * Created by guifeng on 2017/6/26.
   */
 
-abstract class MaterializerHelper(system: ActorSystem) extends SLF4JLogging {
+trait MaterializerHelper extends SLF4JLogging {
 
   val decider: Supervision.Decider = {
     case ex: Exception =>
@@ -17,7 +17,7 @@ abstract class MaterializerHelper(system: ActorSystem) extends SLF4JLogging {
     case _ => Supervision.Stop
   }
 
-  implicit val materializer = ActorMaterializer(
+  def getMaterializer(implicit system: ActorSystem) = ActorMaterializer(
     ActorMaterializerSettings(system)
         .withSupervisionStrategy(decider)
   )

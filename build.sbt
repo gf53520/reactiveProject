@@ -22,6 +22,8 @@ libraryDependencies ++= {
     "commons-io" % "commons-io" % "2.4",
     "ch.qos.logback" % "logback-classic" % "1.1.3",
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
-    "org.scalatest" %% "scalatest" % "3.0.1" % "test")
+    "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+    "com.yammer.metrics" % "metrics-core" % "2.2.0"
+  )
 }
 

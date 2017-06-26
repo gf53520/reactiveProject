@@ -5,7 +5,7 @@ import akka.event.slf4j.SLF4JLogging
 import akka.util.ByteString
 import akka.stream.javadsl.{Framing, FramingTruncation}
 import akka.stream.scaladsl.{Flow, Keep, RunnableGraph, Sink, Source, Tcp}
-import com.reacative.protocol.StudentScore
+import com.reactive.protocol.StudentScore
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
@@ -15,11 +15,13 @@ import scala.util.{Failure, Success}
   */
 
 class Receiver(host: String, port: Int)(implicit val system: ActorSystem)
-    extends MaterializerHelper(system) with SLF4JLogging {
+    extends MaterializerHelper with SLF4JLogging {
 
   import system.dispatcher
 
-  private val frameDecoder = Framing.delimiter(ByteString("\n"), maximumFrameLength = 2048)
+  implicit val materializer = getMaterializer(system)
+
+  private val frameDecoder = Framing.delimiter(ByteString("\n"), maximumFrameLength = 1024)
 
   def run(): Unit = {
     val connections: Source[Tcp.IncomingConnection, Future[Tcp.ServerBinding]] = Tcp().bind(host, port)

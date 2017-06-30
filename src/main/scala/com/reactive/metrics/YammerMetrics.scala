@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 // moitor actor state, 例如 响应时间, 当前正在处理的消息数等
 trait YammerMetrics {
-  
+
   def meter(name: String, eventType: String): Meter =
     Metrics.newMeter(getClass, name, eventType, TimeUnit.SECONDS)
 

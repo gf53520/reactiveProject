@@ -1,4 +1,4 @@
-package com.reactive.core
+package com.reactive.stream.core
 
 import akka.persistence.PersistentActor
 import akka.stream.actor.{ActorSubscriber, MaxInFlightRequestStrategy, RequestStrategy}

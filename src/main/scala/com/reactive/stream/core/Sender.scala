@@ -1,4 +1,4 @@
-package com.reactive.core
+package com.reactive.stream.core
 
 import java.io.{File, PrintWriter}
 import java.nio.file.Paths

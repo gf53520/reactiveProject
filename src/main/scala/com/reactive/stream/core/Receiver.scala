@@ -1,11 +1,12 @@
-package com.reactive.core
+package com.reactive.stream.core
 
+import akka.{Done, NotUsed}
 import akka.actor.ActorSystem
 import akka.event.slf4j.SLF4JLogging
 import akka.util.ByteString
 import akka.stream.javadsl.{Framing, FramingTruncation}
 import akka.stream.scaladsl.{Flow, Keep, RunnableGraph, Sink, Source, Tcp}
-import com.reactive.protocol.StudentScore
+import com.reactive.stream.protocol.StudentScore
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}

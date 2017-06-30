@@ -1,4 +1,4 @@
-package com.reactive.core
+package com.reactive.stream.core
 
 import akka.actor.ActorSystem
 import akka.event.slf4j.SLF4JLogging

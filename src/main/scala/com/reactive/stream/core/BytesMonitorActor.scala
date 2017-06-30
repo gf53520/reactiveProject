@@ -1,4 +1,4 @@
-package com.reactive.core
+package com.reactive.stream.core
 
 import akka.actor.Actor
 import scala.concurrent.duration._

@@ -8,6 +8,7 @@ resolvers ++= Seq("Local Maven Repository" at "file://"+Path.userHome.absolutePa
 
 libraryDependencies ++= {
   val akkaVersion = "2.4.14"
+  val json4sVersion = "3.2.11"
   Seq(
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-remote" % akkaVersion,
@@ -17,6 +18,12 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
     "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion,
     "com.typesafe.akka" % "akka-http-core_2.11" % "10.0.8",
+    "com.typesafe.akka" % "akka-http_2.11" % "10.0.8",
+    "com.typesafe.akka" % "akka-http-spray-json_2.11" % "10.0.8",
+    "de.heikoseeberger" %% "akka-http-circe" % "1.17.0",
+    "org.json4s" % "json4s-native_2.11" % json4sVersion,
+    "org.json4s" % "json4s-jackson_2.11" % json4sVersion,
+    "org.json4s" % "json4s-ext_2.11" % json4sVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
     "com.twitter" %% "util-collection" % "6.42.0",
     "commons-io" % "commons-io" % "2.4",

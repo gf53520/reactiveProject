@@ -18,7 +18,6 @@ import scala.util.Random
   * Created by guifeng on 2017/6/25.
   */
 
-
 object Sender extends SLF4JLogging {
   def main(args: Array[String]): Unit = {
 
@@ -28,7 +27,8 @@ object Sender extends SLF4JLogging {
     val (host, port) = ("127.0.0.1", 8888)
     val serverConnection: Flow[ByteString, ByteString, Future[Tcp.OutgoingConnection]] =
       Tcp().outgoingConnection(host, port)
-    val stream = getClass.getClassLoader.getResourceAsStream("smallData")
+//    val stream = getClass.getClassLoader.getResourceAsStream("smallDataSet")
+    val stream = getClass.getClassLoader.getResourceAsStream("bigDataSet")
     val it: () => Iterator[String] = () => scala.io.Source.fromInputStream(stream).getLines
 
     // ---- first source solution ---
@@ -47,19 +47,12 @@ object Sender extends SLF4JLogging {
             ByteString(line + "\n")
           }
 
-    val sink = Sink.onComplete({
-      r => log.info("Completed with: " + r)
-    })
-
-    val flow = source.via(serverConnection).to(sink)
-
-    val flow1: Future[Done] = source.via(serverConnection)
+    val flow = Flow[ByteString].via(serverConnection)
         .via(Framing.delimiter(ByteString("\n"), 1000, false))
-        .runForeach({ line =>
-          log.info(s"Receive smallDataSet from server: ${line.utf8String}")
-        })
 
-    flow.run()
+    source.via(flow).runForeach({ line =>
+      log.info(s"Receive data from server: ${line.utf8String}")
+    })
   }
 
 
@@ -76,6 +69,4 @@ object Sender extends SLF4JLogging {
     writer.write(data)
     writer.close()
   }
-
-
 }

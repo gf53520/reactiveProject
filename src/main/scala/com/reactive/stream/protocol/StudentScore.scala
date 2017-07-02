@@ -4,7 +4,9 @@ package com.reactive.stream.protocol
   * Created by guifeng on 2017/6/25.
   */
 
-case class StudentScore(id: String, sex: String, math: Double, chinese: Double, english: Double)
+case class StudentScore(id: String, sex: String, math: Double, chinese: Double, english: Double) {
+  def avg = (math + chinese + english)/3
+}
 
 object StudentScore {
   def apply(arr: Array[String]): Option[StudentScore] =
